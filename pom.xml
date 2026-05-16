@@ -27,6 +27,8 @@
         <url/>
     </scm>
     <properties>
+        <!-- CVE-2026-43515(9.1) flagged via dependency-check. Waiting for springboot version update-->
+        <tomcat.version>11.0.22</tomcat.version>
         <java.version>21</java.version>
     </properties>
     <dependencies>
@@ -83,6 +85,53 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+
+            <!-- Triggers SonarQube analysis on Maven projects-->
+            <!-- Analyzes code smells, duplication, coverage thresholds, and security hotspots -->
+            <plugin>
+                <groupId>org.sonarsource.scanner.maven</groupId>
+                <artifactId>sonar-maven-plugin</artifactId>
+                <version>5.6.0.6792</version>
+            </plugin>
+            <!-- Uses dependency-check-core to detect publicly disclosed vulnerabilities associated
+                    with the project's dependencies. -->
+            <plugin>
+                <groupId>org.owasp</groupId>
+                <artifactId>dependency-check-maven</artifactId>
+                <version>12.2.2</version>
+                <configuration>
+                    <nvdApiKey>${env.NVD_API_KEY}</nvdApiKey>
+                    <!-- Fails on Medium and above on CVSS scale-->
+                    <failBuildOnCVSS>4</failBuildOnCVSS>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <version>0.8.14</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>prepare-agent</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>report</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>report</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
