@@ -7,6 +7,7 @@
 
 package org.bsr.springboot.practicebasicauth.testUtil;
 
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -21,5 +22,10 @@ public class TestSecuredController {
     @GetMapping("/api/me")
     public String userEnd() {
         return "SUCCESS";
+    }
+
+    public static void main(String[] args) {
+        System.out.println("u -> : " + new BCryptPasswordEncoder().encode("secret"));
+        System.out.println("a -> : " + new BCryptPasswordEncoder().encode("supersecret"));
     }
 }
