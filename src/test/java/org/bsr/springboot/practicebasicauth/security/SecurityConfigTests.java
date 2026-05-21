@@ -8,7 +8,7 @@
 
 package org.bsr.springboot.practicebasicauth.security;
 
-import org.bsr.springboot.practicebasicauth.testUtil.TestSecuredController;
+import org.bsr.springboot.practicebasicauth.ProdTestController;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
@@ -17,10 +17,9 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@WebMvcTest(controllers = TestSecuredController.class)
+@WebMvcTest(controllers = ProdTestController.class)
 @Import(SecurityConfig.class)
 class SecurityConfigTests {
 
@@ -39,7 +38,8 @@ class SecurityConfigTests {
     void shouldReturn200_whenAuthorized() throws Exception{
         mockMvc.perform(get("/api/me"))
                 .andExpect(status().isOk())
-                .andExpect(content().string("SUCCESS"));
+                .andExpect(jsonPath("$.access").value("granted"))
+                .andExpect(jsonPath("$.role-level").value("standard"));
     }
 
     @Test
@@ -53,7 +53,9 @@ class SecurityConfigTests {
     @Test
     @WithMockUser(roles = "ADMIN")
     void shouldReturn200_whenAdmin() throws Exception{
-        mockMvc.perform(get("/api/admin"))
-                .andExpect(status().isOk()).andExpect(content().string("Secret: SUCCESS"));
+        mockMvc.perform(get("/api/admin/me"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.access").value("granted"))
+                .andExpect(jsonPath("$.role-level").value("privileged"));
     }
 }
