@@ -14,6 +14,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.dao.EmptyResultDataAccessException;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -22,12 +23,15 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 @Import(AppUserRepository.class)
 class AppUserRepoTests {
 
+    // "admin1" is a valid username stored in test db with 2 roles [ADMIN, USER]
+    String validUsername = "admin1";
+
     @Autowired
     AppUserRepository appUserRepository;
 
     @Test
     void shouldReturnUser_whenUsernameFound() {
-        AppUser appUser = appUserRepository.findByUsername("user1");
+        AppUser appUser = appUserRepository.findByUsername(validUsername);
 
         assertThat(appUser).isNotNull();
         assertThat(appUser.getStatus()).isEqualTo("ACTIVE");
@@ -38,5 +42,14 @@ class AppUserRepoTests {
     void shouldReturnException_whenUsernameNotFound() {
         assertThatThrownBy(() -> appUserRepository.findByUsername("invalid-username"))
                 .isInstanceOf(EmptyResultDataAccessException.class);
+    }
+
+    @Test
+    void shouldReturnRoles_whenUsernameFound() {
+        List<String> roles = appUserRepository.findRolesByUsername(validUsername);
+
+        assertThat(roles.size()).isEqualTo(2);
+        assertThat(roles.getFirst()).isEqualTo("ADMIN");
+        assertThat(roles.getLast()).isEqualTo("USER");
     }
 }

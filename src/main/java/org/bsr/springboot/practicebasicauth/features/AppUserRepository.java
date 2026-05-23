@@ -15,6 +15,7 @@ import org.springframework.stereotype.Repository;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Repository
 public class AppUserRepository {
@@ -47,4 +48,9 @@ public class AppUserRepository {
         return jdbcTemplate.queryForObject(sql, APP_USER_ROW_MAPPER, username);
     }
 
+    public List<String> findRolesByUsername(String username) {
+        String sql = "SELECT ROLE_NAME FROM USER_ROLES WHERE USERNAME = ?";
+
+        return jdbcTemplate.queryForList(sql, String.class, username);
+    }
 }
