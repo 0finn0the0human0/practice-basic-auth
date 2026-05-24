@@ -19,7 +19,7 @@ import java.util.List;
 
 public class AppUserPrincipal implements UserDetails {
 
-    private AppUser appUser;
+    private transient AppUser appUser;
     private List<GrantedAuthority> authorities;
 
     public AppUserPrincipal(AppUser appUser, List<GrantedAuthority> authorities) {

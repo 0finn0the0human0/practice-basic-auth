@@ -13,6 +13,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -20,7 +21,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(controllers = ProdTestController.class)
-@Import(SecurityConfig.class)
+@Import({SecurityConfig.class, CustomAuthenticationEntryPoint.class})
 class SecurityConfigTests {
 
     @Autowired
@@ -30,7 +31,14 @@ class SecurityConfigTests {
     @Test
     void shouldReturn401_whenNotAuthorized() throws Exception{
         mockMvc.perform(get("/api/me"))
-                .andExpect(status().isUnauthorized());
+                .andExpect(status().isUnauthorized())
+                .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON))
+                .andExpect(header().exists("WWW-Authenticate"))
+                .andExpect(jsonPath("$.instance").value("/api/me"))
+                .andExpect(jsonPath("$.status").value("401"))
+                .andExpect(jsonPath("$.title").value("Unauthorized"))
+                .andExpect(jsonPath("$.detail").value(
+                        "Authentication credentials are missing or invalid. Include a valid Authorization header."));
     }
 
     @Test

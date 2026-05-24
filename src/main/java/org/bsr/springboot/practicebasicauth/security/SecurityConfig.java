@@ -10,7 +10,6 @@ package org.bsr.springboot.practicebasicauth.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -24,7 +23,7 @@ import org.springframework.security.web.SecurityFilterChain;
 public class SecurityConfig {
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http, CustomAuthenticationEntryPoint customAuthenticationEntryPoint) {
         http.sessionManagement(session ->
                 session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // Correct for REST
                 .csrf(AbstractHttpConfigurer::disable) // Correct for stateless
@@ -32,7 +31,10 @@ public class SecurityConfig {
                         auth.requestMatchers("/api/me").authenticated() // All valid users have USER role
                                 .requestMatchers("/api/admin/**").hasRole("ADMIN") // Admin users must have ADMIN role
                                 .anyRequest().denyAll()) // Deny all other requests
-                .httpBasic(Customizer.withDefaults());
+                .httpBasic(basic ->
+                        basic.authenticationEntryPoint(customAuthenticationEntryPoint)
+                                ).exceptionHandling(ex ->
+                        ex.authenticationEntryPoint(customAuthenticationEntryPoint));
 
         return http.build();
     }
