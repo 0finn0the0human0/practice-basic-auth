@@ -19,8 +19,8 @@ import java.util.List;
 
 public class AppUserPrincipal implements UserDetails {
 
-    private transient AppUser appUser;
-    private List<GrantedAuthority> authorities;
+    private final transient AppUser appUser;
+    private final List<GrantedAuthority> authorities;
 
     public AppUserPrincipal(AppUser appUser, List<GrantedAuthority> authorities) {
         this.appUser = appUser;

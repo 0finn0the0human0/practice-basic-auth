@@ -29,7 +29,7 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
     private final ObjectMapper objectMapper;
 
     private static final URI UNAUTHORIZED_TYPE =
-            URI.create("not-a-real-uri");
+            URI.create("not-a-real-uri/errors/unauthorized");
     @Autowired
     public CustomAuthenticationEntryPoint(ObjectMapper objectMapper) {
         this.objectMapper = objectMapper;
@@ -39,9 +39,8 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException, ServletException {
         // RFC 9110 — MUST send WWW-Authenticate
         response.setHeader("WWW-Authenticate", "Basic realm=\"api\"");
-        response.setHeader("Cache-Control", "no-store");
         response.setHeader("X-Content-Type-Options", "nosniff");
-        response.setContentType("application/problem+json");
+        response.setContentType("application/problem+json;charset=UTF-8");
         response.setStatus(HttpStatus.UNAUTHORIZED.value());
 
         ProblemDetail problem = ProblemDetail.forStatus(HttpStatus.UNAUTHORIZED);

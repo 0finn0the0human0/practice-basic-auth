@@ -23,7 +23,8 @@ import org.springframework.security.web.SecurityFilterChain;
 public class SecurityConfig {
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http, CustomAuthenticationEntryPoint customAuthenticationEntryPoint) {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http, CustomAuthenticationEntryPoint customAuthenticationEntryPoint
+    , CustomAccessDeniedHandler accessDeniedHandler) {
         http.sessionManagement(session ->
                 session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // Correct for REST
                 .csrf(AbstractHttpConfigurer::disable) // Correct for stateless
@@ -34,7 +35,8 @@ public class SecurityConfig {
                 .httpBasic(basic ->
                         basic.authenticationEntryPoint(customAuthenticationEntryPoint)
                                 ).exceptionHandling(ex ->
-                        ex.authenticationEntryPoint(customAuthenticationEntryPoint));
+                ex.accessDeniedHandler(accessDeniedHandler)
+                        .authenticationEntryPoint(customAuthenticationEntryPoint));
 
         return http.build();
     }

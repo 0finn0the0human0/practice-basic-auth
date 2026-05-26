@@ -21,7 +21,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(controllers = ProdTestController.class)
-@Import({SecurityConfig.class, CustomAuthenticationEntryPoint.class})
+@Import({SecurityConfig.class, CustomAuthenticationEntryPoint.class, CustomAccessDeniedHandler.class})
 class SecurityConfigTests {
 
     @Autowired
@@ -32,7 +32,7 @@ class SecurityConfigTests {
     void shouldReturn401_whenNotAuthorized() throws Exception{
         mockMvc.perform(get("/api/me"))
                 .andExpect(status().isUnauthorized())
-                .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON))
+                .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON+";charset=UTF-8"))
                 .andExpect(header().exists("WWW-Authenticate"))
                 .andExpect(jsonPath("$.instance").value("/api/me"))
                 .andExpect(jsonPath("$.status").value("401"))
@@ -52,9 +52,13 @@ class SecurityConfigTests {
 
     @Test
     @WithMockUser(roles = "USER")
-    void shouldReturn403_whenNotAdmin() throws Exception{
+    void shouldReturn404_whenNotAdmin() throws Exception{
         mockMvc.perform(get("/api/admin"))
-                .andExpect(status().isForbidden());
+                .andExpect(status().isNotFound())
+                .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON+";charset=UTF-8"))
+                .andExpect(jsonPath("$.status").value("404"))
+                .andExpect(jsonPath("$.title").value("Not Found"))
+                .andExpect(jsonPath("$.detail").value("Resource not found."));
     }
 
 
