@@ -8,24 +8,38 @@
 
 package org.bsr.springboot.practicebasicauth.security;
 
-import org.bsr.springboot.practicebasicauth.ProdTestController;
+import org.bsr.springboot.practicebasicauth.features.AppUser;
+import org.bsr.springboot.practicebasicauth.features.AppUserController;
+import org.bsr.springboot.practicebasicauth.features.AppUserResponse;
+import org.bsr.springboot.practicebasicauth.features.AppUserService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.util.List;
+import java.util.stream.Stream;
+
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 
-@WebMvcTest(controllers = ProdTestController.class)
+
+@WebMvcTest(controllers = AppUserController.class)
 @Import({SecurityConfig.class, CustomAuthenticationEntryPoint.class, CustomAccessDeniedHandler.class})
 class SecurityConfigTests {
 
     @Autowired
     MockMvc mockMvc;
+    @MockitoBean
+    AppUserService appUserService;
 
 
     @Test
@@ -42,18 +56,28 @@ class SecurityConfigTests {
     }
 
     @Test
-    @WithMockUser
     void shouldReturn200_whenAuthorized() throws Exception{
-        mockMvc.perform(get("/api/me"))
+        AppUser appUser =  new AppUser();
+        appUser.setUsername("user1");
+        appUser.setPassword("secret");
+        appUser.setStatus("ACTIVE");
+        AppUserResponse appUserResponse = new AppUserResponse(appUser.getUsername(), appUser.getStatus(), List.of("USER"));
+        List<GrantedAuthority> authorities = Stream.of("USER")
+                .map(role -> (GrantedAuthority) new SimpleGrantedAuthority("ROLE_"+role))
+                .toList();
+        AppUserPrincipal principal = new AppUserPrincipal(appUser, authorities);
+        when(appUserService.getAppUser(appUserResponse.username())).thenReturn(appUserResponse);
+
+        mockMvc.perform(get("/api/me").with(user(principal)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.access").value("granted"))
-                .andExpect(jsonPath("$.role-level").value("standard"));
+                .andExpect(jsonPath("$.username").value("user1"))
+                .andExpect(jsonPath("$.status").value("ACTIVE"));
     }
 
     @Test
     @WithMockUser(roles = "USER")
     void shouldReturn404_whenNotAdmin() throws Exception{
-        mockMvc.perform(get("/api/admin"))
+        mockMvc.perform(get("/api/admin/me"))
                 .andExpect(status().isNotFound())
                 .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON+";charset=UTF-8"))
                 .andExpect(jsonPath("$.status").value("404"))
@@ -63,11 +87,22 @@ class SecurityConfigTests {
 
 
     @Test
-    @WithMockUser(roles = "ADMIN")
     void shouldReturn200_whenAdmin() throws Exception{
-        mockMvc.perform(get("/api/admin/me"))
+        AppUser appUser =  new AppUser();
+        appUser.setUsername("admin1");
+        appUser.setPassword("supersecret");
+        appUser.setStatus("ACTIVE");
+        AppUserResponse appUserResponse = new AppUserResponse(appUser.getUsername(),
+                appUser.getStatus(), List.of("ADMIN"));
+        List<GrantedAuthority> authorities = Stream.of("ADMIN")
+                .map(role -> (GrantedAuthority) new SimpleGrantedAuthority("ROLE_"+role))
+                .toList();
+        AppUserPrincipal principal = new AppUserPrincipal(appUser, authorities);
+        when(appUserService.getAppUser(appUserResponse.username())).thenReturn(appUserResponse);
+
+        mockMvc.perform(get("/api/admin/me").with(user(principal)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.access").value("granted"))
-                .andExpect(jsonPath("$.role-level").value("privileged"));
+                .andExpect(jsonPath("$.username").value("admin1"))
+                .andExpect(jsonPath("$.status").value("ACTIVE"));
     }
 }
