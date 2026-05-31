@@ -52,4 +52,13 @@ class AppUserRepoTests {
         assertThat(roles.getFirst()).isEqualTo("ADMIN");
         assertThat(roles.getLast()).isEqualTo("USER");
     }
+
+    @Test
+    void shouldReturnAllAppUsers() {
+        List<AppUser> appUsers = appUserRepository.findAll();
+
+        assertThat(appUsers.size()).isEqualTo(2);
+        assertThat(appUsers.getFirst().getUsername()).isEqualTo("admin1");
+        assertThat(appUsers.getLast().getUsername()).isEqualTo("user1");
+    }
 }

@@ -24,12 +24,13 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http, CustomAuthenticationEntryPoint customAuthenticationEntryPoint
-    , CustomAccessDeniedHandler accessDeniedHandler) {
+    , CustomAccessDeniedHandler accessDeniedHandler) throws Exception{
         http.sessionManagement(session ->
                 session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // Correct for REST
                 .csrf(AbstractHttpConfigurer::disable) // Correct for stateless
                 .authorizeHttpRequests(auth ->
-                        auth.requestMatchers("/api/me").authenticated() // All valid users have USER role
+                        auth.requestMatchers("/error").permitAll() // Recommended error controller must always be reachable
+                                .requestMatchers("/api/me").authenticated() // All valid users have USER role
                                 .requestMatchers("/api/admin/**").hasRole("ADMIN") // Admin users must have ADMIN role
                                 .anyRequest().denyAll()) // Deny all other requests
                 .httpBasic(basic ->
@@ -43,6 +44,6 @@ public class SecurityConfig {
 
     @Bean
     public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
+        return new BCryptPasswordEncoder(12); // 12 -> 4,096 iterations
     }
 }

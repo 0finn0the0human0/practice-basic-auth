@@ -53,4 +53,9 @@ public class AppUserRepository {
 
         return jdbcTemplate.queryForList(sql, String.class, username);
     }
+
+    public List<AppUser> findAll() {
+        String sql = "SELECT USERNAME, HASHED_PASSWORD, STATUS, CREATED_AT, UPDATED_AT FROM USERS";
+        return jdbcTemplate.query(sql, APP_USER_ROW_MAPPER);
+    }
 }
