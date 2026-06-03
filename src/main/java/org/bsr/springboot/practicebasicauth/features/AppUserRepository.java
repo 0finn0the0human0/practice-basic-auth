@@ -15,7 +15,10 @@ import org.springframework.stereotype.Repository;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Repository
 public class AppUserRepository {
@@ -57,5 +60,24 @@ public class AppUserRepository {
     public List<AppUser> findAll() {
         String sql = "SELECT USERNAME, HASHED_PASSWORD, STATUS, CREATED_AT, UPDATED_AT FROM USERS";
         return jdbcTemplate.query(sql, APP_USER_ROW_MAPPER);
+    }
+
+    public Map<AppUser, List<String>> findAllAppUsersAndRoles() {
+        Map<AppUser, List<String>> appUserListMap = new HashMap<>();
+        String sql = """
+                SELECT u.USERNAME, u.HASHED_PASSWORD, u.STATUS, u.CREATED_AT, u.UPDATED_AT, r.ROLE_NAME
+                FROM USERS AS u
+                    INNER JOIN USER_ROLES AS r
+                        ON u.USERNAME = r.USERNAME""";
+
+
+        jdbcTemplate.query(sql, rs -> {
+            AppUser user = APP_USER_ROW_MAPPER.mapRow(rs, rs.getRow());
+            String role = rs.getString("ROLE_NAME");
+
+            appUserListMap.computeIfAbsent(user, k -> new ArrayList<>()).add(role);
+        });
+
+        return appUserListMap;
     }
 }

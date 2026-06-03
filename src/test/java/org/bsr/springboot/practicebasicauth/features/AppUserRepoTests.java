@@ -15,6 +15,7 @@ import org.springframework.dao.EmptyResultDataAccessException;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -60,5 +61,14 @@ class AppUserRepoTests {
         assertThat(appUsers.size()).isEqualTo(2);
         assertThat(appUsers.getFirst().getUsername()).isEqualTo("admin1");
         assertThat(appUsers.getLast().getUsername()).isEqualTo("user1");
+    }
+
+    @Test
+    void shouldReturnAllAppUsersAndRoles() {
+        AppUser appUser = appUserRepository.findByUsername(validUsername);
+        Map<AppUser, List<String>> results = appUserRepository.findAllAppUsersAndRoles();
+        assertThat(results).containsKey(appUser).containsValue(List.of("ADMIN", "USER")).hasSize(2);
+
+
     }
 }

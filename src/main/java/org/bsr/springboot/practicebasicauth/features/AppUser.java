@@ -8,6 +8,7 @@
 package org.bsr.springboot.practicebasicauth.features;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 public class AppUser {
 
@@ -55,5 +56,16 @@ public class AppUser {
 
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof AppUser appUser)) return false;
+        return Objects.equals(username, appUser.username);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(username);
     }
 }

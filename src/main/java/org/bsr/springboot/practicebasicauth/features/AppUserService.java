@@ -34,7 +34,13 @@ public class AppUserService {
     }
 
     public List<AppUserResponse> getAllAppUsers() {
-        return List.of(); // #TODO: add functionality to get users and roles for each user
+
+        return appUserRepository.findAllAppUsersAndRoles()
+                .entrySet()
+                .stream()
+                .map(entry -> appUserMapper.toResponse(entry.getKey(), entry.getValue()))
+                .toList();
+
     }
 
 }
