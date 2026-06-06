@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api")
 public class AppUserController {
@@ -34,8 +36,8 @@ public class AppUserController {
     }
 
     @GetMapping("/admin/me")
-    public ResponseEntity<AppUserResponse> getCurrentAdminDetails(@AuthenticationPrincipal AppUserPrincipal appUserPrincipal) {
-        AppUserResponse appUserResponse = appUserService.getAppUser(appUserPrincipal.getUsername());
+    public ResponseEntity<List<AppUserResponse>> getCurrentAdminDetails() {
+        List<AppUserResponse> appUserResponse = appUserService.getAllAppUsers();
         return ResponseEntity.ok(appUserResponse);
 
     }

@@ -4,6 +4,9 @@
  *          authorization scenarios. Web Slice: Security
  * Created: 05/16/2026
  * Version: 1.0
+ * Updated: 6/5/26
+ * Changes: Moving complex mocking into integration SpringBootTest class and replacing with access only checks with
+ *          status
  * */
 
 package org.bsr.springboot.practicebasicauth.security;
@@ -87,22 +90,8 @@ class SecurityConfigTests {
 
 
     @Test
-    void shouldReturn200_whenAdmin() throws Exception{
-        AppUser appUser =  new AppUser();
-        appUser.setUsername("admin1");
-        appUser.setPassword("supersecret");
-        appUser.setStatus("ACTIVE");
-        AppUserResponse appUserResponse = new AppUserResponse(appUser.getUsername(),
-                appUser.getStatus(), List.of("ADMIN"));
-        List<GrantedAuthority> authorities = Stream.of("ADMIN")
-                .map(role -> (GrantedAuthority) new SimpleGrantedAuthority("ROLE_"+role))
-                .toList();
-        AppUserPrincipal principal = new AppUserPrincipal(appUser, authorities);
-        when(appUserService.getAppUser(appUserResponse.username())).thenReturn(appUserResponse);
-
-        mockMvc.perform(get("/api/admin/me").with(user(principal)))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.username").value("admin1"))
-                .andExpect(jsonPath("$.status").value("ACTIVE"));
+    @WithMockUser( roles = "ADMIN")
+    void shouldReturnOk_whenAdmin() throws Exception{
+        mockMvc.perform(get("/api/admin/me")).andExpect(status().isOk());
     }
 }

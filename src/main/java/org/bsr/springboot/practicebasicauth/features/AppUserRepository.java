@@ -15,10 +15,7 @@ import org.springframework.stereotype.Repository;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Repository
 public class AppUserRepository {
@@ -63,7 +60,7 @@ public class AppUserRepository {
     }
 
     public Map<AppUser, List<String>> findAllAppUsersAndRoles() {
-        Map<AppUser, List<String>> appUserListMap = new HashMap<>();
+        Map<AppUser, List<String>> appUserListMap = new LinkedHashMap<>(); // preserves order
         String sql = """
                 SELECT u.USERNAME, u.HASHED_PASSWORD, u.STATUS, u.CREATED_AT, u.UPDATED_AT, r.ROLE_NAME
                 FROM USERS AS u
