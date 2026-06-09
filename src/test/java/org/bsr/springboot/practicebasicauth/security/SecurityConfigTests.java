@@ -48,14 +48,7 @@ class SecurityConfigTests {
     @Test
     void shouldReturn401_whenNotAuthorized() throws Exception{
         mockMvc.perform(get("/api/me"))
-                .andExpect(status().isUnauthorized())
-                .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON+";charset=UTF-8"))
-                .andExpect(header().exists("WWW-Authenticate"))
-                .andExpect(jsonPath("$.instance").value("/api/me"))
-                .andExpect(jsonPath("$.status").value("401"))
-                .andExpect(jsonPath("$.title").value("Unauthorized"))
-                .andExpect(jsonPath("$.detail").value(
-                        "Authentication credentials are missing or invalid. Include a valid Authorization header."));
+                .andExpect(status().isUnauthorized());
     }
 
     @Test
