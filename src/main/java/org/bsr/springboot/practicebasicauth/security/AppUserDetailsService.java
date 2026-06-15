@@ -9,6 +9,7 @@ package org.bsr.springboot.practicebasicauth.security;
 
 import org.bsr.springboot.practicebasicauth.features.AppUser;
 import org.bsr.springboot.practicebasicauth.features.AppUserRepository;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -29,12 +30,19 @@ public class AppUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        AppUser appUser = appUserRepository.findByUsername(username);
-        List<GrantedAuthority> authorities = appUserRepository.findRolesByUsername(username)
-                .stream()
-                .map(role -> (GrantedAuthority) new SimpleGrantedAuthority("ROLE_" + role))
-                .toList();
+        try{
+            AppUser appUser = appUserRepository.findByUsername(username);
+            List<GrantedAuthority> authorities = appUserRepository.findRolesByUsername(username)
+                    .stream()
+                    .map(role -> (GrantedAuthority) new SimpleGrantedAuthority("ROLE_" + role))
+                    .toList();
 
-        return new AppUserPrincipal(appUser, authorities);
+            return new AppUserPrincipal(appUser, authorities);
+        } catch (EmptyResultDataAccessException e) {
+            throw new UsernameNotFoundException("Username not found: " + username);
+        }
+
+
+
     }
 }
