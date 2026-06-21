@@ -1,13 +1,16 @@
 /**
  * Author:  Benjamin Soto-Roberts
- * Desc:    Logs success and failure authentication events.
+ * Desc:    Logs success and failure authentication events. Follows standardized logging format from OWASP Application
+ *          Logging Vocabulary Cheat Sheet.
  * Created: 06/12/2026
- * Version: 1.0
+ * Updated: 06/19/2026 - updated to standard logging format using StructuredArguments for json
+ * Version: 1.1
  */
 
 package org.bsr.springboot.practicebasicauth.security;
 
 import jakarta.servlet.http.HttpServletRequest;
+import net.logstash.logback.argument.StructuredArguments;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +25,7 @@ import java.time.Instant;
 public class AuthenticationEventLogger {
 
     private static final Logger log = LoggerFactory.getLogger(AuthenticationEventLogger.class);
+    private static final String APP_ID = "practice.basic-auth";
     private final HttpServletRequest request;
 
     @Autowired
@@ -31,21 +35,36 @@ public class AuthenticationEventLogger {
 
     @EventListener
     public void onSuccess(AuthenticationSuccessEvent event) {
-        var authentication = event.getAuthentication();
-        String timestamp = Instant.now().toString();
+        String username = event.getAuthentication().getName();
 
-        log.info("[Authentication Event - SUCCESS] username:{}, ip:{}, timestamp:{}",
-                authentication.getName(), request.getRemoteAddr(), timestamp);
+        log.info("authn_login_success",
+                StructuredArguments.keyValue("datetime", Instant.now().toString()),
+                StructuredArguments.keyValue("appid", APP_ID),
+                StructuredArguments.keyValue("event", "authn_login_success:" + username),
+                StructuredArguments.keyValue("level", "INFO"),
+                StructuredArguments.keyValue("description", "User " + username + " login successfully"),
+                StructuredArguments.keyValue("source_ip", request.getRemoteAddr()),
+                StructuredArguments.keyValue("uri", request.getRequestURI()),
+                StructuredArguments.keyValue("method", request.getMethod())
+        );
 
     }
 
     @EventListener
     public void onFailure(AbstractAuthenticationFailureEvent event) {
-        var authentication = event.getAuthentication();
-        String ex = event.getException().getMessage();
-        String timestamp = Instant.now().toString();
 
-        log.warn("[Authentication Event - FAILURE] username:{}, ip:{}, message:{}, timestamp:{}",
-                authentication.getName(), request.getRemoteAddr(), ex, timestamp);
+        String username = event.getAuthentication().getName();
+        String reason = event.getException().getClass().getSimpleName();
+
+        log.warn("authn_login_fail",
+                StructuredArguments.keyValue("datetime", Instant.now().toString()),
+                StructuredArguments.keyValue("appid", APP_ID),
+                StructuredArguments.keyValue("event","authn_login_fail" + username),
+                StructuredArguments.keyValue("level","WARN"),
+                StructuredArguments.keyValue("description", "Login failure for user: " + username),
+                StructuredArguments.keyValue("failure reason", reason),
+                StructuredArguments.keyValue("source_ip", request.getRemoteAddr()),
+                StructuredArguments.keyValue("uri", request.getRequestURI()),
+                StructuredArguments.keyValue("method", request.getMethod()));
     }
 }

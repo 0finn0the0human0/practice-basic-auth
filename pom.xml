@@ -52,6 +52,12 @@
         </dependency>
 
         <dependency>
+            <groupId>net.logstash.logback</groupId>
+            <artifactId>logstash-logback-encoder</artifactId>
+            <version>9.0</version>
+        </dependency>
+
+        <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
             <scope>runtime</scope>
@@ -104,6 +110,7 @@
                 <version>12.2.2</version>
                 <configuration>
                     <nvdApiKey>${env.NVD_API_KEY}</nvdApiKey>
+                    <nvdApiDelay>2000</nvdApiDelay>
                     <!-- Fails on Medium and above on CVSS scale-->
                     <failBuildOnCVSS>4</failBuildOnCVSS>
                 </configuration>
