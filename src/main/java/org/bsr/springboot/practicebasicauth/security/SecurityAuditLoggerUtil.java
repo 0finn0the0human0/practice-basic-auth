@@ -24,7 +24,7 @@ public class SecurityAuditLoggerUtil {
     private static final Logger log = LoggerFactory.getLogger(SecurityAuditLoggerUtil.class);
 
 
-    public void logAuthSuccess(String username, String ip, String method, String requestUri) {
+    public void logAuthnSuccess(String username, String ip, String method, String requestUri) {
         log.info("authn_login_success",
                 StructuredArguments.keyValue("datetime", Instant.now().toString()),
                 StructuredArguments.keyValue("appid", APP_ID),
@@ -38,7 +38,7 @@ public class SecurityAuditLoggerUtil {
         );
     }
 
-    public void logAuthFailure(String username, String reason, String ip, String method, String requestUri) {
+    public void logAuthnFailure(String username, String reason, String ip, String method, String requestUri) {
         log.warn("authn_login_fail",
             StructuredArguments.keyValue("datetime", Instant.now().toString()),
             StructuredArguments.keyValue("appid", APP_ID),
@@ -51,5 +51,20 @@ public class SecurityAuditLoggerUtil {
             StructuredArguments.keyValue("description", "Login failure for user: " + username)
 
         );
+    }
+
+    public void logAuthzFailure(String username, String reason, String ip, String method, String requestUri) {
+        log.warn("authz_login_fail",
+                StructuredArguments.keyValue("datetime", Instant.now().toString()),
+                StructuredArguments.keyValue("appid", APP_ID),
+                StructuredArguments.keyValue("event","authz_login_fail:" + username + "," + requestUri),
+                StructuredArguments.keyValue("level","CRITICAL"),
+                StructuredArguments.keyValue("failure reason", reason),
+                StructuredArguments.keyValue("source_ip", ip),
+                StructuredArguments.keyValue("uri", requestUri),
+                StructuredArguments.keyValue("method", method),
+                StructuredArguments.keyValue("description", "User " + username + " attempted to access a resource without entitlement")
+        );
+
     }
 }

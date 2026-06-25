@@ -32,7 +32,7 @@ public class AuthenticationEventLogger {
     public void onSuccess(AuthenticationSuccessEvent event) {
         String username = event.getAuthentication().getName();
         WebAuthenticationDetails details = (WebAuthenticationDetails) event.getAuthentication().getDetails();
-        auditLogger.logAuthSuccess(username, details.getRemoteAddress(), request.getMethod(), request.getRequestURI());
+        auditLogger.logAuthnSuccess(username, details.getRemoteAddress(), request.getMethod(), request.getRequestURI());
 
     }
 
@@ -42,7 +42,7 @@ public class AuthenticationEventLogger {
         String username = event.getAuthentication().getName();
         String reason = event.getException().getClass().getSimpleName();
 
-        auditLogger.logAuthFailure(username, reason, details.getRemoteAddress(), request.getMethod(),
+        auditLogger.logAuthnFailure(username, reason, details.getRemoteAddress(), request.getMethod(),
                 request.getRequestURI());
 
 
