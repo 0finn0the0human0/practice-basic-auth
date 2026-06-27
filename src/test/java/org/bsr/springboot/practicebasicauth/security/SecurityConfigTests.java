@@ -36,7 +36,8 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 
 
 @WebMvcTest(controllers = AppUserController.class)
-@Import({SecurityConfig.class, CustomAuthenticationEntryPoint.class, CustomAccessDeniedHandler.class})
+@Import({SecurityConfig.class, CustomAuthenticationEntryPoint.class, CustomAccessDeniedHandler.class,
+        SecurityAuditLoggerUtil.class, AuthenticationEventLogger.class})
 class SecurityConfigTests {
 
     @Autowired

@@ -27,9 +27,9 @@ import java.time.Instant;
 public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint {
 
     private final ObjectMapper objectMapper;
+    private static final URI UNAUTHORIZED_TYPE = URI.create("not-a-real-uri/errors/unauthorized");
 
-    private static final URI UNAUTHORIZED_TYPE =
-            URI.create("not-a-real-uri/errors/unauthorized");
+
     @Autowired
     public CustomAuthenticationEntryPoint(ObjectMapper objectMapper) {
         this.objectMapper = objectMapper;

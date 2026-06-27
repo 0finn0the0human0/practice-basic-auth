@@ -42,7 +42,7 @@ public class SecurityAuditLoggerUtil {
         log.warn("authn_login_fail",
             StructuredArguments.keyValue("datetime", Instant.now().toString()),
             StructuredArguments.keyValue("appid", APP_ID),
-            StructuredArguments.keyValue("event","authn_login_fail" + username),
+            StructuredArguments.keyValue("event","authn_login_fail:" + username),
             StructuredArguments.keyValue("level","WARN"),
             StructuredArguments.keyValue("failure reason", reason),
             StructuredArguments.keyValue("source_ip", ip),
