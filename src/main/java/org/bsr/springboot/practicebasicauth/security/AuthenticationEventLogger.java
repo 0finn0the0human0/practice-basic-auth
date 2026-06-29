@@ -15,35 +15,45 @@ import org.springframework.security.authentication.event.AbstractAuthenticationF
 import org.springframework.security.authentication.event.AuthenticationSuccessEvent;
 import org.springframework.security.web.authentication.WebAuthenticationDetails;
 import org.springframework.stereotype.Component;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 @Component
 public class AuthenticationEventLogger {
 
     private final SecurityAuditLoggerUtil auditLogger;
-    private final HttpServletRequest request;
 
     @Autowired
-    public AuthenticationEventLogger(HttpServletRequest request, SecurityAuditLoggerUtil auditLogger) {
-        this.request = request;
+    public AuthenticationEventLogger(SecurityAuditLoggerUtil auditLogger) {
         this.auditLogger = auditLogger;
     }
 
     @EventListener
     public void onSuccess(AuthenticationSuccessEvent event) {
+        ServletRequestAttributes attrs = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+
         String username = event.getAuthentication().getName();
         WebAuthenticationDetails details = (WebAuthenticationDetails) event.getAuthentication().getDetails();
-        auditLogger.logAuthnSuccess(username, details != null ? details.getRemoteAddress() : "unknown", request.getMethod(), request.getRequestURI());
+
+        String method = attrs != null ? attrs.getRequest().getMethod() : "unknown";
+        String requestedUri = attrs != null ? attrs.getRequest().getRequestURI() : "unknown";
+        String ip = details != null ? details.getRemoteAddress() : "unknown";
+        auditLogger.logAuthnSuccess(username, ip, method, requestedUri);
 
     }
 
     @EventListener
     public void onFailure(AbstractAuthenticationFailureEvent event) {
+        ServletRequestAttributes attrs = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+
         WebAuthenticationDetails details = (WebAuthenticationDetails) event.getAuthentication().getDetails();
         String username = event.getAuthentication().getName();
         String reason = event.getException().getClass().getSimpleName();
+        String method = attrs != null ? attrs.getRequest().getMethod() : "unknown";
+        String requestedUri = attrs != null ? attrs.getRequest().getRequestURI() : "unknown";
+        String ip = details != null ? details.getRemoteAddress() : "unknown";
 
-        auditLogger.logAuthnFailure(username, reason, details != null ? details.getRemoteAddress() : "unknown", request.getMethod(),
-                request.getRequestURI());
+        auditLogger.logAuthnFailure(username, reason, ip, method, requestedUri);
 
 
     }

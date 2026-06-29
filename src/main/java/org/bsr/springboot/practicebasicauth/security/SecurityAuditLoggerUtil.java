@@ -29,7 +29,6 @@ public class SecurityAuditLoggerUtil {
                 StructuredArguments.keyValue("datetime", Instant.now().toString()),
                 StructuredArguments.keyValue("appid", APP_ID),
                 StructuredArguments.keyValue("event", "authn_login_success:" + username),
-                StructuredArguments.keyValue("level", "INFO"),
                 StructuredArguments.keyValue("source_ip", ip),
                 StructuredArguments.keyValue("uri", requestUri),
                 StructuredArguments.keyValue("method", method),
@@ -43,8 +42,7 @@ public class SecurityAuditLoggerUtil {
             StructuredArguments.keyValue("datetime", Instant.now().toString()),
             StructuredArguments.keyValue("appid", APP_ID),
             StructuredArguments.keyValue("event","authn_login_fail:" + username),
-            StructuredArguments.keyValue("level","WARN"),
-            StructuredArguments.keyValue("failure reason", reason),
+            StructuredArguments.keyValue("failure_reason", reason),
             StructuredArguments.keyValue("source_ip", ip),
             StructuredArguments.keyValue("uri", requestUri),
             StructuredArguments.keyValue("method", method),
@@ -54,11 +52,10 @@ public class SecurityAuditLoggerUtil {
     }
 
     public void logAuthzFailure(String username, String reason, String ip, String method, String requestUri) {
-        log.warn("authz_login_fail",
+        log.warn("authz_access_denied",
                 StructuredArguments.keyValue("datetime", Instant.now().toString()),
                 StructuredArguments.keyValue("appid", APP_ID),
                 StructuredArguments.keyValue("event","authz_login_fail:" + username + "," + requestUri),
-                StructuredArguments.keyValue("level","CRITICAL"),
                 StructuredArguments.keyValue("failure reason", reason),
                 StructuredArguments.keyValue("source_ip", ip),
                 StructuredArguments.keyValue("uri", requestUri),
