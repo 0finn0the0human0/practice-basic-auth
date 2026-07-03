@@ -29,6 +29,32 @@
     <properties>
         <java.version>21</java.version>
     </properties>
+
+    <!--Overrides the BOM-->
+    <dependencyManagement>
+        <!--Resolves CVE‑2024‑50379, CVE‑2024‑50380, CVE‑2024‑50381, CVE‑2024‑50382, CVE‑2024‑50383, CVE‑2026‑53404-->
+        <dependencies>
+            <dependency>
+                <groupId>org.apache.tomcat.embed</groupId>
+                <artifactId>tomcat-embed-core</artifactId>
+                <version>10.1.56</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.tomcat.embed</groupId>
+                <artifactId>tomcat-embed-websocket</artifactId>
+                <version>10.1.56</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.tomcat.embed</groupId>
+                <artifactId>tomcat-embed-el</artifactId>
+                <version>10.1.56</version>
+            </dependency>
+        </dependencies>
+
+    </dependencyManagement>
+
     <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>
