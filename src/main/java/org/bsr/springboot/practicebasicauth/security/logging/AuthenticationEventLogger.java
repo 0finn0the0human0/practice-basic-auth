@@ -6,9 +6,8 @@
  * Version: 1.1
  */
 
-package org.bsr.springboot.practicebasicauth.security;
+package org.bsr.springboot.practicebasicauth.security.logging;
 
-import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.security.authentication.event.AbstractAuthenticationFailureEvent;

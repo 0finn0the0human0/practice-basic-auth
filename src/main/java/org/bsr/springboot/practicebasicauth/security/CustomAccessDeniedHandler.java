@@ -10,6 +10,7 @@ package org.bsr.springboot.practicebasicauth.security;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.bsr.springboot.practicebasicauth.security.logging.SecurityAuditLoggerUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;

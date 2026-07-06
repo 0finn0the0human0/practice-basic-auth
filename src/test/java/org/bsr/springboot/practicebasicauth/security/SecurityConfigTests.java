@@ -15,6 +15,8 @@ import org.bsr.springboot.practicebasicauth.features.AppUser;
 import org.bsr.springboot.practicebasicauth.features.AppUserController;
 import org.bsr.springboot.practicebasicauth.features.AppUserResponse;
 import org.bsr.springboot.practicebasicauth.features.AppUserService;
+import org.bsr.springboot.practicebasicauth.security.logging.AuthenticationEventLogger;
+import org.bsr.springboot.practicebasicauth.security.logging.SecurityAuditLoggerUtil;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
