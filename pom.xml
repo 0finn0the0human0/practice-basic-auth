@@ -83,6 +83,28 @@
             <version>9.0</version>
         </dependency>
 
+        <!-- Bucket4j core - a token‑bucket rate limiter library.-->
+        <dependency>
+            <groupId>com.bucket4j</groupId>
+            <artifactId>bucket4j_jdk17-core</artifactId>
+            <version>8.19.0</version>
+        </dependency>
+
+        <!-- Bucket4j Caffeine extension -->
+        <dependency>
+            <groupId>com.bucket4j</groupId>
+            <artifactId>bucket4j_jdk17-caffeine</artifactId>
+            <version>8.19.0</version>
+        </dependency>
+
+        <!-- Caffeine itself - a high‑performance in‑memory cache for Java.-->
+        <dependency>
+            <groupId>com.github.ben-manes.caffeine</groupId>
+            <artifactId>caffeine</artifactId>
+            <version>3.2.4</version>
+        </dependency>
+
+
         <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>

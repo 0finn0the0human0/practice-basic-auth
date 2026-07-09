@@ -17,6 +17,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
@@ -24,10 +25,11 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http, CustomAuthenticationEntryPoint customAuthenticationEntryPoint
-    , CustomAccessDeniedHandler accessDeniedHandler) throws Exception{
+    , CustomAccessDeniedHandler accessDeniedHandler, RateLimitingFilter rateLimitingFilter) throws Exception{
         http.sessionManagement(session ->
                 session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // Correct for REST
                 .csrf(AbstractHttpConfigurer::disable) // Correct for stateless
+                .addFilterBefore(rateLimitingFilter, UsernamePasswordAuthenticationFilter.class)
                 .authorizeHttpRequests(auth ->
                         auth.requestMatchers("/error").permitAll() // Recommended error controller must always be reachable
                                 .requestMatchers("/api/me").authenticated() // All valid users have USER role
