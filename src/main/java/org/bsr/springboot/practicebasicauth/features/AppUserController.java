@@ -35,7 +35,7 @@ public class AppUserController {
 
     }
 
-    @GetMapping("/admin/me")
+    @GetMapping("/admin/users")
     public ResponseEntity<List<AppUserResponse>> getCurrentAdminDetails() {
         List<AppUserResponse> appUserResponse = appUserService.getAllAppUsers();
         return ResponseEntity.ok(appUserResponse);
